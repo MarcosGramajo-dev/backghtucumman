@@ -13,13 +13,16 @@ mercadopago.configure({
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(express.static("../../client/html-js"));
+// app.use(express.static("../../client/html-js"));
 app.use(cors());
-app.get("/", function (req, res) {
-	res.status(200).sendFile("index.html");
+
+const router = express.Router();
+
+router.get("/", function (req, res) {
+	res.status(200)
 });
 
-app.post("/create_preference", (req, res) => {
+router.post("/create_preference", (req, res) => {
 
 	let preference = {
 		items: [
@@ -48,7 +51,7 @@ app.post("/create_preference", (req, res) => {
 		});
 });
 
-app.get('/feedback', function (req, res) {
+router.get('/feedback', function (req, res) {
     if (req.query.status === 'approved') {
 
 		let participant_id = parseInt(req.query.participant_id, 10)
@@ -94,7 +97,7 @@ app.get('/feedback', function (req, res) {
 
 
 
-app.get('/participants', function (req, res) {
+router.get('/participants', function (req, res) {
     const { id } = req.query;
 
     if (id) {
@@ -116,7 +119,9 @@ app.get('/participants', function (req, res) {
     }
 });
 
+app.use('/.netlify/functions/server', router);
+export const handler = serverless(app);
 
-app.listen(8080, () => {
-	console.log("The server is now running on Port 8080");
-});
+// app.listen(8080, () => {
+// 	console.log("The server is now running on Port 8080");
+// });
