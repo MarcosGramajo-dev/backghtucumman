@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
+    "build": "netlify deploy --prod",
     "start": "node functions/server.js",
     "debug": "nodemon --inspect=5005 server.js"
   },
