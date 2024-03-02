@@ -1,11 +1,26 @@
 import express from "express";
 import cors from "cors";
 import serverless from "serverless-http";
+import participants from '../db/participants.json'
+import mercadopago from "mercadopago";
+import fs from 'fs';
 
 const app = express();
-app.use(cors());
+
+const corsOptions = {
+    origin: ['*'],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true, // Habilita el intercambio de cookies a través de las solicitudes
+    optionsSuccessStatus: 204, // Para que las solicitudes OPTIONS resuelvan correctamente
+};
+
+app.use(cors(corsOptions));
 
 const router = express.Router();
+
+mercadopago.configure({
+	access_token: "TEST-6228624431860766-022718-6803ca6d10fd708ebcc008b0e465b7b7-1243177028",
+});
 
 router.get('/', (req, res) => {
     const htmlContent = `
@@ -23,6 +38,35 @@ router.get('/', (req, res) => {
     `;
     
     res.send(htmlContent);
+});
+
+router.post("/create_preference", (req, res) => {
+
+	let preference = {
+		items: [
+			{
+				title: req.body.description,
+				unit_price: Number(req.body.price),
+				quantity: Number(req.body.quantity),
+				external_reference: Number(req.body.id)
+			}
+		],
+		back_urls: {
+			"success": "http://localhost:8080/feedback",
+			"failure": "http://localhost:3000/feedback",
+			"pending": "http://localhost:3000/feedback"
+		},
+		auto_return: "approved",
+	};
+
+	mercadopago.preferences.create(preference)
+		.then(function (response) {
+			res.json({
+				id: response.body.id
+			});
+		}).catch(function (error) {
+			console.log(error);
+		});
 });
 
 router.get('/participants', function (req, res) {
