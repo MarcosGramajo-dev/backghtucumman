@@ -25,6 +25,28 @@ router.get('/', (req, res) => {
     res.send(htmlContent);
 });
 
+router.get('/participants', function (req, res) {
+    const { id } = req.query;
+
+    if (id) {
+        const participant = participants.find(participant => participant.id === parseInt(id, 10));
+
+        if (participant) {
+            res.json({
+                participant
+            });
+        } else {
+            res.status(404).json({
+                error: 'Participant not found'
+            });
+        }
+    } else {
+        res.json({
+            participants
+        });
+    }
+});
+
 app.use('/.netlify/functions/server', router);
 export const handler = serverless(app);
 
