@@ -1,9 +1,9 @@
-const express = require("express");
+import express from "express";
+import cors from "cors";
+import mercadopago from "mercadopago";
+import participants from "../db/participants.json"
 const app = express();
-const cors = require("cors");
-const mercadopago = require("mercadopago");
-const participants = require("../db/participants.json")
-const fs = require('fs');
+import fs from 'fs';
 
 // REPLACE WITH YOUR ACCESS TOKEN AVAILABLE IN: https://developers.mercadopago.com/panel
 mercadopago.configure({
@@ -18,8 +18,22 @@ app.use(cors());
 
 const router = express.Router();
 
-router.get("/", function (req, res) {
-	res.status(200)
+app.get('/', (req, res) => {
+    const htmlContent = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>HTML Rendering</title>
+        </head>
+        <body>
+            <h1>Hello, this is rendered HTML!</h1>
+        </body>
+        </html>
+    `;
+    
+    res.send(htmlContent);
 });
 
 router.post("/create_preference", (req, res) => {
