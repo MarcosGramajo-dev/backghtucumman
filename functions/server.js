@@ -9,7 +9,7 @@ import mongoose from 'mongoose';
 const app = express();
 
 const corsOptions = {
-  origin: 'https://ghtucuman.com.ar',
+  origin: '*',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
 };
