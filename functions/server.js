@@ -4,6 +4,7 @@ import serverless from "serverless-http";
 import participants from '../db/participants.json'
 import mercadopago from "mercadopago";
 import fs from 'fs';
+import mongoose from 'mongoose';
 
 const app = express();
 
@@ -21,6 +22,62 @@ const router = express.Router();
 mercadopago.configure({
   access_token: "TEST-6228624431860766-022718-6803ca6d10fd708ebcc008b0e465b7b7-1243177028",
 });
+
+const uri = "mongodb+srv://Mrcos33:33163648mg@cluster0.kbauiaw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+
+mongoose.connect(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+
+const participantSchema = new mongoose.Schema({
+id: {
+    type: Number,
+    required: true,
+},
+name: {
+    type: String,
+    required: true,
+},
+lastName: {
+    type: String,
+    required: true,
+},
+age: {
+    type: Number,
+    required: true,
+},
+describe: {
+    type: String,
+    default: '', // Valor predeterminado si no se proporciona
+},
+votes: {
+    type: Number,
+    default: 0,
+},
+photo: {
+    type: String,
+    required: true,
+},
+quantity_votes: {
+    type: Number,
+    default: 0,
+},
+facebook: {
+    type: String,
+    default: '',
+},
+instagram: {
+    type: String,
+    default: '',
+},
+tiktok: {
+    type: String,
+    default: '',
+},
+});
+
+const Participant = mongoose.model('Participant', participantSchema);
 
 router.get('/', (req, res) => {
   const htmlContent = `
@@ -68,31 +125,25 @@ router.post("/create_preference", (req, res) => {
     });
 });
 
-router.get('/participants', function (req, res) {
-  const { id } = req.query;
-
-  if (id) {
-    const participant = participants.find(participant => participant.id === parseInt(id, 10));
-
-    if (participant) {
+router.get('/participants', async (req, res) => {
+    try {
+      const participants = await Participant.find();
       res.json({
-        participant
+        participants
       });
-    } else {
-      res.status(404).json({
-        error: 'Participant not found'
+    } catch (error) {
+      console.error('Error fetching participants:', error);
+      res.status(500).json({
+        error: 'Internal Server Error'
       });
     }
-  } else {
-    res.json({
-      participants
-    });
-  }
-});
-
+  });
 
 router.get('/feedback', function (req, res) {
     if (req.query.status === 'approved') {
+        const participant_id = parseInt(req.query.participant_id, 10);
+        const quantity_votes = parseInt(req.query.quantity_votes, 10);
+
         // Busca el participante por su id
         const participantIndex = participants.findIndex(participant => participant.id === participant_id);
 
@@ -128,6 +179,7 @@ router.get('/feedback', function (req, res) {
         });
     }
 });
+
 
 
 app.use('/.netlify/functions/server', router);
