@@ -8,15 +8,15 @@ import fs from 'fs';
 const app = express();
 
 const corsOptions = {
-    origin: ['*'],
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true, // Habilita el intercambio de cookies a través de las solicitudes
-    optionsSuccessStatus: 204, // Para que las solicitudes OPTIONS resuelvan correctamente
-};
+    origin: '*', // Permitir solicitudes desde este origen
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Métodos HTTP permitidos
+    credentials: true, // Permitir enviar cookies y encabezados de autenticación
+  };
+  
 
-app.use(cors(corsOptions));
-
+  
 const router = express.Router();
+app.use(cors(corsOptions));
 
 mercadopago.configure({
 	access_token: "TEST-6228624431860766-022718-6803ca6d10fd708ebcc008b0e465b7b7-1243177028",
