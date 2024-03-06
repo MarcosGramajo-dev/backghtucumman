@@ -1,16 +1,17 @@
 import mongoose from 'mongoose';
+// const mongoose = require('mongoose')
 
 const voteSchema = new mongoose.Schema({
-    id: {
+    payment_id: {
         type: Number,
         required: true,
     },
-    payment_id: {
-        type: String,
+    participant_id: {
+        type: Number,
         required: true,
     },
-    participant_id: {
-        type: String,
+    quantity_votes: {
+        type: Number,
         required: true,
     }
     });
