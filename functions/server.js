@@ -95,7 +95,6 @@ router.get('/participants', async (req, res) => {
       const { id } = req.query;
     
       if (id) {
-        // Si hay un 'id', busca un participante específico
         const participant = await Participant.findOne({ id: id });
   
         if (participant) {
@@ -108,7 +107,6 @@ router.get('/participants', async (req, res) => {
           });
         }
       } else {
-        // Si no hay 'id', obtén todos los participantes
         const participants = await Participant.find();
         res.json({
           participants
@@ -172,39 +170,56 @@ router.get('/feedback', async (req, res) => {
     }
 });
 
-router.use('/feedback/payment', async (req, res) => {
+router.post('/feedback/payment', async (req, res) => {
   try {
     const payment_id = req.body.data.id;
-
     let vote = await Vote.findOne({ payment_id });
             
-    if (!vote) {
+    // if (!vote) {
 
       const headers = {
         Authorization: `Bearer ${tokenMP}`,
       };
-  
-      const response = await axios.get(`https://api.mercadopago.com/v1/payments/${payment_id}`, {
+      console.log('headers', headers)
+
+      const response = await fetch(`https://api.mercadopago.com/v1/payments/${payment_id}`, {
+        method: 'GET',
         headers: headers,
       });
-      console.log(response.data);
-  
-      const quantity_votes = response.additional_info.items[0].quantity
-      const participant_id = response.external_reference
 
-      if(payment_id, quantity_votes, participant_id){
+      // const response = await axios.get(`https://api.mercadopago.com/v1/payments/${payment_id}`, {
+      //   headers: headers,
+      // });
+
+      const responseData = await response.json();
+  
+      const quantity_votes = responseData.additional_info.items[0].quantity
+      const participant_id = responseData.external_reference
+
+      console.log(payment_id, quantity_votes, participant_id, vote)
+      if(vote && payment_id && quantity_votes && participant_id){
+
+        vote.participant_id = participant_id
+        vote.payment_id = payment_id
+        vote.quantity_votes = quantity_votes
+        
+      } else {
+
         vote = new Vote({
           participant_id: participant_id,
           payment_id: payment_id,
           quantity_votes: quantity_votes
         });
+
       }
 
-    }
+      await vote.save();
+
+    // }
 
     res.status(200).json(response.data);
   } catch (error) {
-    console.error('Error handling feedback:', error);
+    //console.error('Error handling feedback:', error);
     res.status(500).json({
       error: 'Internal Server Error',
       details: error.message,
@@ -216,6 +231,6 @@ app.use('/.netlify/functions/server', router);
 
 // app.listen(8080, () => {
 //   console.log(`Servidor escuchando en http://localhost:8080`);
-// });
+//});
 
 export const handler = serverless(app);
