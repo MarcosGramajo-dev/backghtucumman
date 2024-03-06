@@ -5,13 +5,19 @@ import mercadopago from "mercadopago";
 import mongoose from 'mongoose';
 import Participant from './models/participant.js'
 
+const uri = "mongodb+srv://Mrcos33:33163648mg@cluster0.kbauiaw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 const app = express();
 
 const corsOptions = {
-  origin: 'https://ghtucuman.com.ar',
+  origin: ['https://ghtucuman.com.ar', 'http://localhost:3000'],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
 };
+
+mongoose.connect(uri, {
+    autoIndex: true,
+    dbName: 'ghTucuman'
+  });
 
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -22,61 +28,6 @@ mercadopago.configure({
   access_token: "APP_USR-4653160923834908-022517-a0194518caf3416b5ac615fb10b0eb49-302856011",
 });
 
-const uri = "mongodb+srv://Mrcos33:33163648mg@cluster0.kbauiaw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-
-mongoose.connect(uri, {
-    autoIndex: true,
-    dbName: 'ghTucuman'
-  });
-
-// const participantSchema = new mongoose.Schema({
-// id: {
-//     type: Number,
-//     required: true,
-// },
-// name: {
-//     type: String,
-//     required: true,
-// },
-// lastName: {
-//     type: String,
-//     required: true,
-// },
-// age: {
-//     type: Number,
-//     required: true,
-// },
-// describe: {
-//     type: String,
-//     default: '', // Valor predeterminado si no se proporciona
-// },
-// votes: {
-//     type: Number,
-//     default: 0,
-// },
-// photo: {
-//     type: String,
-//     required: true,
-// },
-// quantity_votes: {
-//     type: Number,
-//     default: 0,
-// },
-// facebook: {
-//     type: String,
-//     default: '',
-// },
-// instagram: {
-//     type: String,
-//     default: '',
-// },
-// tiktok: {
-//     type: String,
-//     default: '',
-// },
-// });
-
-// const Participant = mongoose.model('participants', participantSchema);
 
 router.get('/', (req, res) => {
   const htmlContent = `
@@ -196,8 +147,6 @@ router.get('/feedback', async (req, res) => {
     }
 });
   
-
-
 app.use('/.netlify/functions/server', router);
 
 export const handler = serverless(app);
