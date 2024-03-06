@@ -1,10 +1,9 @@
 import express from "express";
 import cors from "cors";
 import serverless from "serverless-http";
-import participants from '../db/participants.json'
 import mercadopago from "mercadopago";
-import fs from 'fs';
 import mongoose from 'mongoose';
+import Participant from './models/participant.js'
 
 const app = express();
 
@@ -30,54 +29,54 @@ mongoose.connect(uri, {
     dbName: 'ghTucuman'
   });
 
-const participantSchema = new mongoose.Schema({
-id: {
-    type: Number,
-    required: true,
-},
-name: {
-    type: String,
-    required: true,
-},
-lastName: {
-    type: String,
-    required: true,
-},
-age: {
-    type: Number,
-    required: true,
-},
-describe: {
-    type: String,
-    default: '', // Valor predeterminado si no se proporciona
-},
-votes: {
-    type: Number,
-    default: 0,
-},
-photo: {
-    type: String,
-    required: true,
-},
-quantity_votes: {
-    type: Number,
-    default: 0,
-},
-facebook: {
-    type: String,
-    default: '',
-},
-instagram: {
-    type: String,
-    default: '',
-},
-tiktok: {
-    type: String,
-    default: '',
-},
-});
+// const participantSchema = new mongoose.Schema({
+// id: {
+//     type: Number,
+//     required: true,
+// },
+// name: {
+//     type: String,
+//     required: true,
+// },
+// lastName: {
+//     type: String,
+//     required: true,
+// },
+// age: {
+//     type: Number,
+//     required: true,
+// },
+// describe: {
+//     type: String,
+//     default: '', // Valor predeterminado si no se proporciona
+// },
+// votes: {
+//     type: Number,
+//     default: 0,
+// },
+// photo: {
+//     type: String,
+//     required: true,
+// },
+// quantity_votes: {
+//     type: Number,
+//     default: 0,
+// },
+// facebook: {
+//     type: String,
+//     default: '',
+// },
+// instagram: {
+//     type: String,
+//     default: '',
+// },
+// tiktok: {
+//     type: String,
+//     default: '',
+// },
+// });
 
-const Participant = mongoose.model('participants', participantSchema);
+// const Participant = mongoose.model('participants', participantSchema);
 
 router.get('/', (req, res) => {
   const htmlContent = `
